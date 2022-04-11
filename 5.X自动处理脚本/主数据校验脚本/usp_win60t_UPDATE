@@ -1,0 +1,37 @@
+if  exists(select 1 from sysobjects where name='usp_win60t_UPDATE' and xtype='P')
+     drop proc usp_win60t_UPDATE
+go
+create proc usp_win60t_UPDATE
+    @tabname  nvarchar(255),
+	@col  nvarchar(255),
+	@nval  nvarchar(255),
+	@pkval nvarchar(255)
+	/***
+	  select * from SF_BRXXK where patid='154534'
+	  select * from tab_win60t_MDATA
+	   usp_win60t_UPDATE 'SF_BRXXK',hzxm,'newname',154534
+	**/
+	as
+	   set nocount on
+
+     if not exists(select 1 from tab_win60t_MDATA where tab=@tabname and col=@col and col_range is null)
+	    return '请检查入参'
+
+	  declare @pk nvarchar(255)
+	 select @pk=col from tab_win60t_MDATA where tab=@tabname and pk=1
+	-- select @pk
+
+	 
+	 declare @upsql nvarchar(255)
+	 select @upsql='update '+@tabname+' set '+@col+' ='''+@nval+''' where '+@pk+'='+@pkval
+	 begin try
+	 exec(@upsql)
+	 end try
+	 begin catch
+	     select @upsql,'执行失败',
+		 error_number()as error_number ,
+						error_message()as error_message,
+						error_state()as error_state,
+						error_severity()as error_severity
+	 end catch
+	 go

@@ -1,0 +1,6 @@
+bin/
+xtest/
+xtest*/
+xtest_temp_data/
+xtest_temp_data*/
+src/com/winning/debug/

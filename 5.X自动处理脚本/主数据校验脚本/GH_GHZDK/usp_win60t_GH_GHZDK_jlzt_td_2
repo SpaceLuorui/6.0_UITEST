@@ -1,0 +1,28 @@
+alter  proc  usp_win60t_GH_GHZDK_jlzt_td_2
+    @procv nvarchar(255) OUTPUT,
+	@pkv  nvarchar(255)  OUTPUT,
+	@colv  nvarchar(255) OUTPUT
+    /*默认调用：
+	    declare @procv_sub  nvarchar(255)--子存储返回值
+		 declare @pkv_sub  nvarchar(255)--子存储返回值
+		 declare @colv_sub  nvarchar(255)--子存储返回值
+		 exec usp_win60t_GH_GHZDK_jlzt_td_2 @procv_sub OUTPUT,@pkv_sub OUTPUT,@colv_sub OUTPUT
+		 select @procv_sub
+		usp_win60t_GH_GHZDK_jlzt_td_0
+	   
+   **/       
+ as 
+	--调用td_1就可以,作废会自动生成一条红冲数据
+	  declare @procv_1  nvarchar(255)--子存储返回值
+		 declare @pkv_1  nvarchar(255)--子存储返回值
+		 declare @colv_1  nvarchar(255)--子存储返回值
+		 exec usp_win60t_GH_GHZDK_jlzt_td_1 @procv_1 OUTPUT,@pkv_1 OUTPUT,@colv_1 OUTPUT
+
+		 select @procv='GH_GHZDK.jlzt',@pkv=xh,@colv=jlzt from GH_GHZDK where txh=@pkv_1
+		 
+	  
+     
+
+
+ 
+     

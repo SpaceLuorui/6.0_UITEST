@@ -1,0 +1,54 @@
+alter  proc  usp_win60t_GH_GHZDK_jlzt_td_0
+    @procv nvarchar(255) OUTPUT,
+	@pkv  nvarchar(255)  OUTPUT,
+	@colv  nvarchar(255) OUTPUT
+    /*默认调用：
+	    declare @procv_sub  nvarchar(255)--子存储返回值
+		 declare @pkv_sub  nvarchar(255)--子存储返回值
+		 declare @colv_sub  nvarchar(255)--子存储返回值
+		 exec usp_win60t_GH_GHZDK_jlzt_td_0 @procv_sub OUTPUT,@pkv_sub OUTPUT,@colv_sub OUTPUT
+		 select @procv_sub
+		usp_win60t_GH_GHZDK_jlzt_td_0
+	   
+   **/       
+ as 
+	--取前置条件,获取一个新登记的患者
+	 
+	  declare @patid nvarchar(255)
+	  exec usp_win60t_GH_GHZDK_conditon @patid output
+      
+	  declare @ksdm nvarchar(255) 
+	  declare @ghksdm nvarchar(255)
+	  select  top 1 @ksdm=ksdm,@ghksdm=ghksdm from GH_GHZDK order by xh desc
+	  --select @ghksdm
+
+	  if not exists(select 1 from YY_KSBMK where id=@ksdm)
+	      return
+
+	  begin tran 
+	  exec usp_gh_ghdj_wjtest '68071579B77E',1,0,0,1,0,@patid,'00',@ksdm,'',@ghksdm,'SJH',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',@yyrq='',@zqdm='',@jmjsbz=0,@inghzdxh=0,@ghfdm='',@yhdm='',@sfyf='0',@brlyid='',@wlzxyid=''   
+   exec usp_gh_ghdj_wjtest '68071579B77E',2,0,0,1,0,@patid,'00',@ksdm,'',@ghksdm,'SJH',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',  
+        @yyrq='',@zqdm='',@jmjsbz=0,@inghzdxh=0,@zymzxh = 0,@pbmxxh=-1,@xmldxx='',@ghfdm='',@kmdm='',@yhdm='',@zbdm='',@brlyid='',@wlzxyid=''--【Ztsql】    
+   exec usp_gh_ghdj_wjtest '68071579B77E',3,0,0,1,0,@patid,'00',@ksdm,'',@ghksdm,'SJH',0,0,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',  
+        @yyrq='',@zqdm='',@jmjsbz=0,@zzdjh = '',@inghzdxh=0,@ghfdm='',@ghfselectbz='',@yhdm='',@sfyf='0',@brlyid='',@wlzxyid=''--【Ztsql】    
+      if @@error<>0
+	    rollback tran
+	  else
+	    commit tran
+    
+	declare @sjh nvarchar(255)  
+   select @sjh= sjh from SF_BRJSK where  patid=@patid    
+   --4.生成4.0挂号的结算信息  
+       begin tran b    
+   exec usp_gh_ghdj_ex2_wjtest '68071579B77E',3,2,0,1,0,@patid,'00',@ksdm,'',@ghksdm,@sjh,0,0,'','','','','',0,0,0,0,0,0,0,0,0,0,0,'',0,@zlje=0.00,@zzdjh=''--【Ztsql】    
+	  if @@error<>0
+			rollback tran b
+		  else
+			commit tran b
+
+     select    @procv='GH_GHZDK.jlzt',@pkv=xh,@colv=jlzt from GH_GHZDK where patid=@patid  
+     
+
+
+ 
+     

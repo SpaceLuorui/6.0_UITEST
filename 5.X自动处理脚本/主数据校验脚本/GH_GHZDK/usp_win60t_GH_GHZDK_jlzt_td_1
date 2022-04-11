@@ -1,0 +1,36 @@
+alter  proc  usp_win60t_GH_GHZDK_jlzt_td_1
+    @procv nvarchar(255) OUTPUT,
+	@pkv  nvarchar(255)  OUTPUT,
+	@colv  nvarchar(255) OUTPUT
+    /*默认调用：
+	    1表示挂号被作废了
+	    指定值域的无入参，后缀就是入参,分开写，方便相互调用
+		declare @procv_sub  nvarchar(255)--子存储返回值
+		 declare @pkv_sub  nvarchar(255)--子存储返回值
+		 declare @colv_sub  nvarchar(255)--子存储返回值
+		 exec usp_win60t_GH_GHZDK_jlzt_td_1 @procv_sub OUTPUT,@pkv_sub OUTPUT,@colv_sub OUTPUT
+		 select @procv_sub
+	   
+   **/       
+ as 
+	--从前一段取到一条有效挂号记录
+	--记录开始时间
+	    declare @procv_1 nvarchar(255)  
+		declare  @pkv_1  nvarchar(255)   
+		declare  @colv_1  nvarchar(255)  
+	   exec usp_win60t_GH_GHZDK_jlzt_td_0 @procv_1 OUTPUT,@pkv_1 OUTPUT,@colv_1 OUTPUT
+	   
+    --挂号作废
+	declare @ghxh nvarchar(255)
+	declare @sjh  nvarchar(255)
+	   
+	    select  top 1 @ghxh=xh,@sjh=jssjh from  GH_GHZDK  where xh=@pkv_1
+	 
+
+    execute usp_gh_ghzf_wjtest @sjh,"00"
+	--execute usp_gh_ghzf_wjtest @sjh,"00",0,0,"","",0,"","" ,"","",0,0,@zffs=0,@zffs_tf=1,@thyydm="3",@isshowckf= "ZH236",@isshowgbf= "201711103",@m_bIsXztgbf= 1,@m_bIsprintFPforckf= 1
+
+     select    @procv='GH_GHZDK.jlzt',@pkv=xh,@colv=jlzt from GH_GHZDK where xh=@ghxh  
+ 
+ 
+     

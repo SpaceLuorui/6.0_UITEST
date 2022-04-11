@@ -1,0 +1,44 @@
+alter  proc  usp_win60t_GH_GHZDK_ksdm_td
+     @ksdm   nvarchar(255)='' ---列值
+    /*默认调用：
+	    从最新的GH_GHZDK中取一条ksdm作为数据   usp_win60t_GH_GHZDK_ksdm_td
+	    指定值生成(注意无值的判断) usp_win60t_GH_GHZDK_ksdm_td '3203'
+	    select * from GH_GHZDK where xh=108080
+	   
+   **/       
+ as 
+	--取前置条件,获取一个新登记的患者
+	  declare @patid nvarchar(255)
+	  exec usp_win60t_GH_GHZDK_conditon @patid output
+	   
+      if(@ksdm='')
+	  select  top 1 @ksdm=ksdm from GH_GHZDK order by xh desc
+	  
+	  if not exists(select 1 from YY_KSBMK where id=@ksdm)
+	      return
+
+	  begin tran 
+	  exec usp_gh_ghdj_wjtest '68071579B77E',1,0,0,1,0,@patid,'00',@ksdm,'','2002','SJH',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',@yyrq='',@zqdm='',@jmjsbz=0,@inghzdxh=0,@ghfdm='',@yhdm='',@sfyf='0',@brlyid='',@wlzxyid=''   
+   exec usp_gh_ghdj_wjtest '68071579B77E',2,0,0,1,0,@patid,'00',@ksdm,'','2002','SJH',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',  
+        @yyrq='',@zqdm='',@jmjsbz=0,@inghzdxh=0,@zymzxh = 0,@pbmxxh=-1,@xmldxx='',@ghfdm='',@kmdm='',@yhdm='',@zbdm='',@brlyid='',@wlzxyid=''--【Ztsql】    
+   exec usp_gh_ghdj_wjtest '68071579B77E',3,0,0,1,0,@patid,'00',@ksdm,'','2002','SJH',0,0,'',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,'',0,'',0,0,'','','','',0,'1','','','',  
+        @yyrq='',@zqdm='',@jmjsbz=0,@zzdjh = '',@inghzdxh=0,@ghfdm='',@ghfselectbz='',@yhdm='',@sfyf='0',@brlyid='',@wlzxyid=''--【Ztsql】    
+      if @@error<>0
+	    rollback tran
+	  else
+	    commit tran
+    
+	declare @sjh nvarchar(255)  
+   select @sjh= sjh from SF_BRJSK where  patid=@patid    
+   --4.生成4.0挂号的结算信息  
+       begin tran b    
+   exec usp_gh_ghdj_ex2_wjtest '68071579B77E',3,2,0,1,0,@patid,'00',@ksdm,'','2002',@sjh,0,0,'','','','','',0,0,0,0,0,0,0,0,0,0,0,'',0,@zlje=0.00,@zzdjh=''--【Ztsql】    
+	  if @@error<>0
+			rollback tran b
+		  else
+			commit tran b
+
+     select    'GH_GHZDK.ksdm',xh,ksdm from GH_GHZDK where patid=@patid  
+ 
+ 
+     

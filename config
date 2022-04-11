@@ -1,0 +1,198 @@
+############所有测试集都要配置##################
+# 测试集名称
+suiteName = com.winning.testsuite.Smoke
+# 测试环境地址(门诊)
+host = 172.16.7.171
+# 医院id
+hospital_soid=256181
+#多院区名字(ORGANIZATION.ORG_NAME，默认default)
+Hospital_OgName_name=default
+
+# 登录用户名密码(6.0)(门诊、大临床共用)
+default_user_login_account=6618
+default_user_login_pwd=456
+
+# 自动挂号医保代码（仅适用于集团卫宁,默认自费）
+ybdm=1
+
+# HIS类型(JTWN:集团卫宁 ,SXWN:山西卫宁)
+hisType = JTWN
+
+# 数据库配置(HIS) 数据库类型,sqlserver或oracle
+hisDbType = sqlserver
+# 数据库配置(HIS) 数据库地址
+hisHost = 172.16.7.50
+# 数据库配置(HIS) 数据库实例
+hisInstance = None
+# 数据库配置(HIS) 数据库名称
+hisDbname = THIS4_RC
+# 数据库配置(HIS) 数据库服务名，当hisDbType为oracle时需要
+hisDbService = ORCL
+# 数据库配置(HIS) 数据库用户名
+hisUsername = THIS4_RC
+# 数据库配置(HIS) 数据库密码
+hisPassword = Winning@THIS_RC
+
+# 数据库配置(6.0) 数据库类型,sqlserver或oracle
+wn60DbType = sqlserver
+# 数据库配置(6.0) 数据库地址
+wn60DbHost = 172.16.7.50
+# 数据库配置(6.0) 数据库实例
+wn60DbInstance = None
+# 数据库配置(6.0) 数据库名称
+wn60Dbname = win60_pdb1
+# 数据库配置(6.0) 数据库服务名，当wn60DbType为oracle时需要
+wn60DbService = ORCL
+# 数据库配置(6.0) 数据库用户名
+wn60DbUsername = WINDBA
+# 数据库配置(6.0) 数据库密码
+wn60DbPassword = sql2K!^RCAW
+
+
+# 是否使用混合框架配置
+useHybirdApp = false
+# 混合框架路径，线上测试暂不支持
+hybirdAppPath = E:\\Winning\\混合框架\\混合框架\\Win60.exe
+# 控制是否截图
+getScreenShot=false
+# 无头浏览器模式
+headless=true
+# 参数配置的模式
+modeConfiguration=release
+
+###############挂号相关配置###############
+#从文件中读取患者挂号信息
+getEncounterFromFile=false
+
+# 自动挂号科室编码和名称
+test_select_subject = 康复医学科
+newEncounterSubjectCode=2011
+
+#浙江卫宁HIS-挂号服务
+hisServiceHost=http://172.16.6.31:8080
+
+#挂号医生id(山西卫宁)
+sxwn_doctorid =3972
+
+#挂号医生id(天津卫宁)
+tjwn_doctorid=!!!!
+
+#HIS配置-Q医服务器地址(天津卫宁)
+hisQyUrl=http://172.16.0.196:8080
+
+###############冒烟测试配置###############
+#转诊科室
+test_select_subject2=肾脏风湿科
+#症状
+test_chief_complain=疼痛
+#诊断
+test_disease=衣原体性尿道炎
+#切换诊断
+test_disease2=动脉硬化
+#西药名称
+test_prescribe_drug=雷贝拉唑钠肠溶胶囊
+#中药名称
+test_prescribe_herb=白及
+#检验名称
+test_prescribe_lab=尿液爱迪氏计数
+#检查名称
+test_prescribe_exam=单脏器彩色多普勒超声检查
+#治疗名称
+test_prescribe_treat=洗胃
+#病理名称
+test_prescribe_Pathology=手术标本检查与诊断(大标本
+#病历模板名称
+emrTemplateName=测试另存为1130
+
+###############历史处置循环配置##################
+# 测试开始日期
+historcalStartDate=2020-09-08
+# 测试结束日期
+historcalEndDate=2020-10-08
+# 历史处置最大测试数，-1代表测试上述时间范围内所有历史医嘱项
+allHistoralTestMaxNo=-1
+
+###############全医嘱开立配置#####################
+# 是否测试药品(true:测试 ,false:不测试, UI流程测试也读取)
+testMedicineFlag=true
+
+# 是否测试检验(true:测试 ,false:不测试，UI流程测试也读取)
+testLabFlag=true
+
+# 是否测试病理(true:测试 ,false:不测试，UI流程测试也读取)
+testPathologyFlag=true
+
+# 是否测试治疗(true:测试 ,false:不测试，UI流程测试也读取)
+testTreatFlag=true
+
+# 是否测试检查项目(true:测试 ,false:不测试，UI流程测试也读取)
+testExamItemFlag=true
+
+# 各类医嘱最大测试数,-1代表测试所有医嘱项
+allServiceTestMaxNo=-1
+
+# 是否检查加工厂默认值
+checkFactory=false
+
+###########全医嘱开立和历史处置开立公用配置###########
+# 控制启动浏览器数量(根据电脑配置调整)
+threadNum=4
+# 带指定标签的用例重新测试,多个标签用&&连接 (设置为: 60无库存&&60无搜索结果  时,会重新测试报告中 60无库存 和 60无搜索结果 的内用例 ， 设置为 failCase 时跳过重新测试所有失败的用例 , 设置为 Case 时重新测试所有用例，设置为None时会接着上次的结果继续执行)
+retryFlag=None
+# 忽略以下错误信息
+ignoreErrors=none
+# 包含以下错误信息的用例独立分类
+specialErrorType=60无库存&&60无搜索结果&&计费策略&&加工厂默认值错误&&签署后2分钟未落库&&His收费失败&&His退费失败&&搜索医嘱失败&&打开加工厂失败&&开立医嘱失败&&签署医嘱失败&&撤销医嘱按钮&&删除医嘱按钮
+
+#########大临床测试配置##############
+#自动挂号病区
+inpatient_select_ward=骨科病区
+#自动挂号病区编码
+inpatient_select_ward_code=04
+#床位编号前缀
+bedNoPrefix=ST
+#转科-新科室
+inpatient_select_newDepartmen=结核科
+#转科-新病区
+inpatient_select_newWard=结核一病区
+#手术名称
+test_prescribe_operation=肢体缩短手术
+#用血名称
+test_prescribe_blood=浓缩血小板
+#护理名称
+test_prescribe_nursing=头晕护理常规
+#膳食名称
+test_prescribe_diet=软食
+#住院病历二级审签流程中提交病历的医生账号
+inpatient_submitEMR_login_account=1307
+#住院病历二级审签流程中提交病历的医生密码
+inpatient_submitEMR_login_pwd=456
+#设置了二级审签的住院病历模板名1
+inpatient_EMR1=入院记录
+#设置了二级审签的住院病历模板名2
+inpatient_EMR2=首次病程记录
+#设置了二级审签的住院病历模板名3
+inpatient_EMR3=转出记录
+#体温单模板名
+chart_Record=体温单
+#入院评估单模板名
+chart_InpatientAssess=入院护理评估记录单
+#疼痛评估单模板名
+chart_assess1=疼痛评估单
+#其他评估单模板名
+chart_assess2=跌倒/坠床风险评估
+
+
+###########大临床入区医生和护士配置###################
+#责任护士账号
+responsibleNurse=2077
+#责任医生账号
+responsibleDoctor=1303
+#住院医生账号
+residentDoctor=1209
+#主治医生账号
+attendingDoctor=1303
+#主任医生账号
+headDoctor=1303
+#入院登记的病房编号
+InpatRoomName=1501

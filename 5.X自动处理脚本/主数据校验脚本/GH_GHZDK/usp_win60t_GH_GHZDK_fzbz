@@ -1,0 +1,88 @@
+    
+alter  proc  usp_win60t_GH_GHZDK_fzbz      
+   @hospital_soid  numeric,
+   @pkval   nvarchar(255)=''   ----传入表的主键值,默认为空
+    /*调用： usp_win60t_GH_GHZDK_fzbz 15
+	  调用： usp_win60t_GH_GHZDK_fzbz 15,107264
+   */
+   
+   /**命名规则,以表名加列名结尾
+      select * from tab_win60t_MDATA where col='fzbz' and tab='GH_GHZDK'	  
+   **/       
+ as 
+	 
+		  create table #error(
+		  T_5X  nvarchar(255) not null,   ---5X中的表名
+		  C_5X nvarchar(255) not null,   ---5X中的表的列
+		  PK nvarchar(255) not null,   --5X中的主键的值 或表数据总数
+		  V_5X nvarchar(255) not null,   ---5X中的表的列的值
+		  V_60 nvarchar(255) not null,    ---60中的表的列的值        
+		  T_60  nvarchar(255) not null,   ---60中的表名
+		  C_60 nvarchar(255) not null,   ---60中的表的列
+		  MSG nvarchar(255) not null,
+          addtime time not null default getdate()
+  ) 
+   
+    --1.比较ypdm
+    declare @VALUE_SET nvarchar(255)  
+   select  @VALUE_SET=dbo.fun_win60test_addsc('VALUE_SET')    
+    
+	declare @OUTPATIENT_ENCOUNTER nvarchar(255)  
+   select  @OUTPATIENT_ENCOUNTER=dbo.fun_win60test_addsc('OUTPATIENT_ENCOUNTER') 
+
+   --表主键
+   declare @xh numeric 
+
+   --需要校验的字段
+   declare  @fzbz  nvarchar(255)
+   declare  @fzbz_ys  nvarchar(255)
+   declare  @fzbz_60  nvarchar(255)
+    
+   --给60赋值存在相关变量
+   declare @sqlcx nvarchar(max)
+	
+   --将win60存在的数据插入临时表，供游标使用
+   select xh,fzbz into #curtab from GH_GHZDK_check where  No_in60=0
+   --根据入参处理临时表
+   if(@pkval<>'')
+      delete from #curtab where xh<>@pkval
+   --给临时表建索引
+	create index ind_patid on #curtab(xh)
+   
+   --定义游标遍历
+   declare mycur_fzbz cursor for (select xh,fzbz from #curtab)
+   open mycur_fzbz
+   fetch next from mycur_fzbz into @xh,@fzbz
+   while @@FETCH_STATUS=0
+      begin
+	        --取win60有的数据,如果没有则不用比较
+				    
+			   select @sqlcx='select @_fzbz=b.VALUE_DESC from '+ @OUTPATIENT_ENCOUNTER+' a inner join '+@VALUE_SET+' b on  a.ENCOUNTER_STATUS=b.VALUE_ID where a.HOSPITAL_SOID=@_soid 
+                  and a.ENC_REG_SEQ_NO=@_xh'
+				exec sp_executesql @sqlcx,N'@_fzbz nvarchar(255) out,@_xh nvarchar(12),@_soid numeric',@_fzbz=@fzbz_60 OUTPUT,@_xh=@xh,@_soid=@hospital_soid
+             
+			   --HIS映射关系(从HIS出发，找win60对应的值)：0:未分诊,1 分诊,2 就诊,3 结束就 诊 ４:结束就诊（其它）5:结束中 （其它)
+			    select @fzbz_ys=case @fzbz when 0 then '未就诊' when 1 then '分诊' when 2 then '就诊' when 3 then '结束就诊'
+				                when 4 then '结束就诊（其它)' when 5 then '结束中 （其它)' else 'HIS暂无映射' end
+				--select @fzbz_ys 
+			   --注意： 如果返回的XX_60为NULL，说明没有找到对应数据
+               if(@fzbz_ys <> isnull(@fzbz_60,'无值'))
+			        insert into #error(T_5X,C_5X,V_5X,PK,T_60,C_60,V_60,MSG)
+					     values ('GH_GHZDK','fzbz',@fzbz,@xh,'OUTPATIENT_ENCOUNTER','ENCOUNTER_STATUS',isnull(@fzbz_60,'无值'),'fzbz不一致')
+               --select @ypdm_60
+	     
+    select @sqlcx=''   --清空sql
+	select @fzbz_60=NULL
+	select @fzbz_ys=NULL  
+	    
+    fetch next from mycur_fzbz into @xh,@fzbz
+     end      
+  close mycur_fzbz          
+  DEALLOCATE mycur_fzbz       
+  drop table #curtab
+
+  select * from #error
+      
+  drop table #error 
+
+  
